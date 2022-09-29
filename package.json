@@ -14,7 +14,6 @@
     "@quasar/extras": "^1.14.0",
     "@vueuse/core": "^8.6.0",
     "axios": "^0.27.2",
-    "chart.js": "^3.8.0",
     "dayjs": "^1.11.3",
     "pinia": "^2.0.14",
     "quasar": "^2.7.1",
@@ -25,10 +24,8 @@
     "unplugin-vue-components": "^0.19.6",
     "vee-validate": "^4.5.11",
     "vue": "^3.2.25",
-    "vue-chart-3": "^3.1.8",
     "vue-lazytube": "^1.1.1",
     "vue-router": "^4.0.16",
-    "vue3-youtube": "^0.1.9",
     "webfontloader": "^1.0.0",
     "yup": "^0.32.11"
   },
