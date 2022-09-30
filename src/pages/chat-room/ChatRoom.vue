@@ -77,7 +77,20 @@
     </div>
   </div>
 </template>
+<script setup>
+import { onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
+import useSocket from "@/service/socketFunc";
+import useStore from "@/store";
+const { startConnect, getDataSocket } = useSocket();
+const route = useRoute();
+const store = useStore();
 
+watch(()=> route.params.channel_id, ()=>{
+  startConnect(route.params.channel_id);
+  getDataSocket()
+})
+</script>
 <style>
 .scrollbar-w-2::-webkit-scrollbar {
   width: 0.25rem;
@@ -100,8 +113,3 @@
   border-radius: 0.25rem;
 }
 </style>
-
-<script>
-const el = document.getElementById("messages");
-// el.scrollTop = el.scrollHeight;
-</script>

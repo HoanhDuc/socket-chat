@@ -1,11 +1,12 @@
 import useStore from "@/store";
+import useSocket from "@/service/socketFunc";
 const store = useStore();
 
 export const checkAuth = () => {
   gapi.load("client:auth2", async function () {
     gapi.auth2.init({
       client_id:
-        "5354673368-eal9lani9uo2uqihp0vv971o428mhg1f.apps.googleusercontent.com",
+        "728519911608-0t6vvds5r80ecepqfhmjsr1tg0a2cqmn.apps.googleusercontent.com",
       scope: "email profile openid",
       plugin_name: "App Name that you used in google developer console API",
     });
@@ -28,7 +29,7 @@ const setAuth = () => {
     });
 };
 const loadClient = async () => {
-  await gapi.client.setApiKey("AIzaSyDNfziLpL9tPvW8C-CAahC6ci73N8Hbv7o");
+  await gapi.client.setApiKey("AIzaSyCX4Mto57qU2oKZtqAMjaRxOklP_9qGLKw");
   await gapi.client.load(
     "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"
   );
@@ -43,4 +44,7 @@ const loadClient = async () => {
   };
   store.setUserGoogle(user);
   store.setLogedIn(true);
+  const { startConnect, getDataSocket } = useSocket();
+  startConnect('all');
+  getDataSocket()
 };
