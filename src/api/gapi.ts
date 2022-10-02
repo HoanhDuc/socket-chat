@@ -30,11 +30,13 @@ const setAuth = () => {
 };
 const loadClient = async () => {
   await gapi.client.setApiKey("AIzaSyCX4Mto57qU2oKZtqAMjaRxOklP_9qGLKw");
-  await gapi.client.load(
-    "https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"
-  );
   const authInstance = await gapi.auth2.getAuthInstance();
   const user = {
+    id: await authInstance.currentUser
+      .get()
+      .getBasicProfile()
+      .getEmail()
+      .split("@")[0],
     name: await authInstance.currentUser.get().getBasicProfile().getName(),
     email: await authInstance.currentUser.get().getBasicProfile().getEmail(),
     avatar: await authInstance.currentUser
@@ -42,9 +44,8 @@ const loadClient = async () => {
       .getBasicProfile()
       .getImageUrl(),
   };
-  store.setUserGoogle(user);
+  store.setUserAuth(user);
   store.setLogedIn(true);
-  const { startConnect, getDataSocket } = useSocket();
-  startConnect('all');
-  getDataSocket()
+  const { startConnectGlobal } = useSocket();
+  startConnectGlobal("all");
 };

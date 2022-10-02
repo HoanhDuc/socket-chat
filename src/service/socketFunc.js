@@ -1,47 +1,70 @@
 import useStore from "@/store";
+import { Notify } from "quasar";
 const store = useStore();
-let connection = {};
+
 WebSocket.prototype.emit = function (eventName, dataMessage) {
-  this.send(JSON.stringify({ event: eventName, dataMessage }));
+  this.send(
+    JSON.stringify({
+      event: eventName,
+      dataMessage: JSON.stringify(dataMessage),
+    })
+  );
 };
 export default function useSocket() {
-  const startConnect = (channel_id) => {
-    connection = new WebSocket(
+  const startConnectPrivate = (channel_id) => {
+    const connection = new WebSocket(
       `wss://demo.piesocket.com/v3/${channel_id}?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self`
     );
-    connection.onopen = () => {
-      const user = {
-        name: store.getUserGoogle.name,
-        email: store.getUserGoogle.email,
-        avatar: store.getUserGoogle.avatar,
-      };
-      connection.emit("user", JSON.stringify(user));
-    };
-  };
-  const getDataSocket = () => {
     connection.onmessage = (mess) => {
-      const event = JSON.parse(mess.data).event
-      const data = JSON.parse(JSON.parse(mess.data).dataMessage)
-      switch (event) {
-        case "user":
-          if(checkNotMe(data)){
-            console.log(mess.dataMessage);
-          }
-          break;
-        default:
-          return;
+      const event = JSON.parse(mess.data).event;
+      const data = JSON.parse(JSON.parse(mess.data).dataMessage);
+      if (checkNotMe(data)) {
+        switch (event) {
+          case "message":
+            acitonEventMessage(data);
+            break;
+          default:
+            return;
+        }
+      }
+    };
+    return connection;
+  };
+  const startConnectGlobal = () => {
+    const connectionGlobal = new WebSocket(
+      `wss://demo.piesocket.com/v3/all?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self`
+    );
+    connectionGlobal.onopen = () => {
+      const user = {
+        id: store.getUserAuth.email.split("@")[0],
+        name: store.getUserAuth.name,
+        email: store.getUserAuth.email,
+        avatar: store.getUserAuth.avatar,
+      };
+      connectionGlobal.emit("user", user);
+    };
+    connectionGlobal.onmessage = (mess) => {
+      const data = JSON.parse(JSON.parse(mess.data).dataMessage);
+      if (
+        checkNotMe(data) &&
+        !store.listOnline.map((item) => item.id).includes(data.id)
+      ) {
+        store.addUserOnline(data);
       }
     };
   };
-  const checkNotMe = (user) =>{
-    console.log(user.email, store.getUserGoogle.email);
-    if(user.email !== store.getUserGoogle.email){
-      return true
+
+  const acitonEventMessage = (message) => {
+    store.setPrivateMessage(message)
+  };
+  const checkNotMe = (user) => {
+    if (user.email !== store.getUserAuth.email) {
+      return true;
     }
-    return false
-  }
+    return false;
+  };
   return {
-    startConnect,
-    getDataSocket,
+    startConnectGlobal,
+    startConnectPrivate,
   };
 }

@@ -1,14 +1,21 @@
 export const routes = [
   {
-    name: "Home",
+    name: "Socket",
     path: "/",
     component: () => import("@/layouts/default.vue"),
-    redirect: "/socket/all",
+    redirect: "/chat",
     children: [
       {
         name: "HomePage",
-        path: "/socket/:channel_id",
-        component: () => import("@/pages/chat-room/ChatRoom.vue"),
+        path: "/chat",
+        component: () => import("@/pages/HomePage.vue"),
+        children: [
+          {
+            name: "Chat",
+            path: "/chat/:channel_id",
+            component: () => import("@/pages/ChatBox.vue"),
+          },
+        ],
       },
     ],
   },
